@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-29T05:30:16.752774+00:00",
+  "generated_at": "2026-04-29T05:58:19.111206+00:00",
   "source_out_dir": "out",
   "rankings": [
     {
@@ -99,23 +99,5 @@
       "score": 59.84
     }
   ],
-  "signals": [
-    {
-      "timestamp": 1777426506,
-      "wallet": "0x492442eab586f242b53bda933fd5de859c8a3782",
-      "wallet_name": "0x492442EaB586F242B53bDa933fD5dE859c8A3782-1766317541188",
-      "wallet_score": 63.54,
-      "side": "BUY",
-      "market": "0xf64d6c423c7818e376361150954c65895dea1a23958a360774caa44831e83a83",
-      "outcome": "Ducks",
-      "price": 0.43,
-      "size": 58182.72,
-      "cash": 25018.57,
-      "suggested_cash": 63.54,
-      "title": "Ducks vs. Oilers",
-      "slug": "nhl-ana-edm-2026-04-28",
-      "consensus_wallets": 1,
-      "transaction_hash": "0x15535a8a783372647c3742550cd698bdfd6fb04b752fc8567d024e197ff2e513"
-    }
-  ]
+  "signals": []
 }
