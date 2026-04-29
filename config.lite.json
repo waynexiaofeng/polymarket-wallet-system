@@ -1,0 +1,22 @@
+{
+  "analysis_window_days": 90,
+  "candidate_categories": ["OVERALL", "POLITICS", "SPORTS", "CRYPTO", "CULTURE", "WEATHER", "ECONOMICS", "TECH", "FINANCE"],
+  "candidate_periods": ["MONTH", "ALL"],
+  "candidate_limit_per_query": 25,
+  "max_wallets_to_analyze": 30,
+  "min_closed_positions": 10,
+  "min_realized_pnl": 1000,
+  "min_roi": 0.02,
+  "min_wallet_score": 55,
+  "recent_trade_lookback_hours": 12,
+  "max_trade_age_minutes": 240,
+  "min_trade_cash": 50,
+  "max_trade_cash": 50000,
+  "min_copy_price": 0.12,
+  "max_copy_price": 0.88,
+  "max_market_exposure_fraction": 0.08,
+  "bankroll": 10000,
+  "base_bet_fraction": 0.01,
+  "require_consensus_wallets": 1,
+  "out_dir": "out"
+}
