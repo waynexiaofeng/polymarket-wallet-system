@@ -46,6 +46,7 @@
         <div class="tabs" role="tablist" aria-label="数据视图">
           <button class="tab active" data-view="wallets" type="button">钱包排名</button>
           <button class="tab" data-view="signals" type="button">近期信号</button>
+          <button class="tab" data-view="copy" type="button">OKX跟单</button>
           <button class="tab" data-view="rules" type="button">风控规则</button>
         </div>
       </section>
@@ -83,6 +84,56 @@
         <div id="signalCards" class="signal-grid"></div>
       </section>
 
+      <section id="copyView" class="panel hidden">
+        <div class="section-head split-head">
+          <div>
+            <h2>OKX 钱包自动跟单</h2>
+            <p>系统会自动把通过风控的信号加入队列；提交交易前仍需你在 OKX 钱包确认。</p>
+          </div>
+          <button id="connectOkx" class="primary-action" type="button">连接 OKX 钱包</button>
+        </div>
+
+        <div class="copy-layout">
+          <aside class="copy-settings">
+            <div class="wallet-state">
+              <span>钱包状态</span>
+              <strong id="okxStatus">未连接</strong>
+              <code id="okxAddress">--</code>
+            </div>
+
+            <label class="switch-row">
+              <input id="autoCopyEnabled" type="checkbox" />
+              <span>开启自动跟单队列</span>
+            </label>
+
+            <label>
+              单笔最大金额 USDC
+              <input id="maxCopyCash" type="number" min="1" step="1" value="50" />
+            </label>
+
+            <label>
+              最低钱包评分
+              <input id="minCopyScore" type="number" min="0" max="100" step="1" value="60" />
+            </label>
+
+            <label>
+              最大可接受价格
+              <input id="maxCopyPrice" type="number" min="0" max="1" step="0.01" value="0.88" />
+            </label>
+
+            <button id="saveCopySettings" class="secondary-action" type="button">保存设置</button>
+          </aside>
+
+          <div class="copy-queue">
+            <div class="queue-head">
+              <h3>待执行队列</h3>
+              <span id="queueCount">0 条</span>
+            </div>
+            <div id="copyQueue"></div>
+          </div>
+        </div>
+      </section>
+
       <section id="rulesView" class="panel hidden">
         <div class="section-head">
           <h2>系统执行规则</h2>
@@ -100,6 +151,10 @@
           <article>
             <h3>仓位控制</h3>
             <p>默认单笔约为本金 1%，单市场最大敞口不超过 8%。先纸面运行再实盘。</p>
+          </article>
+          <article>
+            <h3>OKX 跟单</h3>
+            <p>网页可自动生成待执行队列，但不会保管私钥；每次真实交易都需要钱包弹窗确认。</p>
           </article>
         </div>
       </section>
