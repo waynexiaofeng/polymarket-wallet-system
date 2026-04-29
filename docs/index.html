@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Polymarket 钱包盈利系统</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">Polymarket Wallet Profit System</p>
+        <h1>钱包盈利系统</h1>
+      </div>
+      <div class="status">
+        <span id="runStatus">加载中</span>
+        <time id="updatedAt">--</time>
+      </div>
+    </header>
+
+    <main>
+      <section class="summary-grid" aria-label="核心指标">
+        <article>
+          <span>入选钱包</span>
+          <strong id="walletCount">0</strong>
+        </article>
+        <article>
+          <span>当前信号</span>
+          <strong id="signalCount">0</strong>
+        </article>
+        <article>
+          <span>最高评分</span>
+          <strong id="topScore">0</strong>
+        </article>
+        <article>
+          <span>最高90天PnL</span>
+          <strong id="topPnl">$0</strong>
+        </article>
+      </section>
+
+      <section class="toolbar" aria-label="筛选">
+        <div class="search">
+          <label for="walletSearch">搜索钱包</label>
+          <input id="walletSearch" type="search" placeholder="输入名称或地址" />
+        </div>
+        <div class="tabs" role="tablist" aria-label="数据视图">
+          <button class="tab active" data-view="wallets" type="button">钱包排名</button>
+          <button class="tab" data-view="signals" type="button">近期信号</button>
+          <button class="tab" data-view="rules" type="button">风控规则</button>
+        </div>
+      </section>
+
+      <section id="walletsView" class="panel">
+        <div class="section-head">
+          <h2>过去90天表现最好的钱包</h2>
+          <p>评分综合 PnL、ROI、胜率、样本量、市场分散度和当前浮亏风险。</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>排名</th>
+                <th>钱包</th>
+                <th>评分</th>
+                <th>90天PnL</th>
+                <th>ROI</th>
+                <th>胜率</th>
+                <th>已结算</th>
+                <th>集中度</th>
+                <th>当前浮动PnL</th>
+              </tr>
+            </thead>
+            <tbody id="walletRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="signalsView" class="panel hidden">
+        <div class="section-head">
+          <h2>自动筛选出的近期信号</h2>
+          <p>默认只显示通过价格、金额、钱包评分和时间窗口过滤的买入信号。</p>
+        </div>
+        <div id="signalCards" class="signal-grid"></div>
+      </section>
+
+      <section id="rulesView" class="panel hidden">
+        <div class="section-head">
+          <h2>系统执行规则</h2>
+          <p>这些规则用于保护本金，避免盲目追随榜单大户。</p>
+        </div>
+        <div class="rules-grid">
+          <article>
+            <h3>钱包过滤</h3>
+            <p>要求足够样本、正收益、合理 ROI，并扣除单一市场过度集中和大额浮亏风险。</p>
+          </article>
+          <article>
+            <h3>信号过滤</h3>
+            <p>只跟踪 BUY，过滤极端价格、过大交易、过旧交易和低评分钱包。</p>
+          </article>
+          <article>
+            <h3>仓位控制</h3>
+            <p>默认单笔约为本金 1%，单市场最大敞口不超过 8%。先纸面运行再实盘。</p>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
