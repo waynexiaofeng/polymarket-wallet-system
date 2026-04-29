@@ -2,6 +2,16 @@ const state = {
   data: { rankings: [], signals: [], generated_at: null },
   view: "wallets",
   query: "",
+  okx: {
+    address: "",
+    chainId: "",
+  },
+  copySettings: {
+    enabled: false,
+    maxCash: 50,
+    minScore: 60,
+    maxPrice: 0.88,
+  },
 };
 
 const fmtMoney = new Intl.NumberFormat("zh-CN", {
@@ -101,12 +111,170 @@ function renderSignals() {
             <div><dt>建议仓位</dt><dd>${fmtMoney.format(signal.suggested_cash || 0)}</dd></div>
             <div><dt>钱包评分</dt><dd>${Number(signal.wallet_score || 0).toFixed(2)}</dd></div>
             <div><dt>时间</dt><dd>${formatTime(signal.timestamp)}</dd></div>
+            <div><dt>Token ID</dt><dd>${signal.asset ? shortAddress(String(signal.asset)) : "缺失"}</dd></div>
           </dl>
           <p class="wallet"><code>${shortAddress(signal.wallet)}</code></p>
         </article>
       `;
     })
     .join("");
+}
+
+function loadCopySettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem("copySettings") || "{}");
+    state.copySettings = { ...state.copySettings, ...saved };
+  } catch (_) {
+    localStorage.removeItem("copySettings");
+  }
+
+  document.getElementById("autoCopyEnabled").checked = state.copySettings.enabled;
+  document.getElementById("maxCopyCash").value = state.copySettings.maxCash;
+  document.getElementById("minCopyScore").value = state.copySettings.minScore;
+  document.getElementById("maxCopyPrice").value = state.copySettings.maxPrice;
+}
+
+function saveCopySettings() {
+  state.copySettings = {
+    enabled: document.getElementById("autoCopyEnabled").checked,
+    maxCash: Number(document.getElementById("maxCopyCash").value || 0),
+    minScore: Number(document.getElementById("minCopyScore").value || 0),
+    maxPrice: Number(document.getElementById("maxCopyPrice").value || 0),
+  };
+  localStorage.setItem("copySettings", JSON.stringify(state.copySettings));
+  renderCopyQueue();
+}
+
+function getOkxProvider() {
+  return window.okxwallet?.ethereum || window.okxwallet || null;
+}
+
+async function connectOkxWallet() {
+  const provider = getOkxProvider();
+  if (!provider?.request) {
+    alert("未检测到 OKX 钱包插件。请安装并解锁 OKX Wallet 后刷新页面。");
+    return;
+  }
+
+  const accounts = await provider.request({ method: "eth_requestAccounts" });
+  state.okx.address = accounts?.[0] || "";
+  state.okx.chainId = await provider.request({ method: "eth_chainId" });
+  await ensurePolygon(provider);
+  renderOkxState();
+  renderCopyQueue();
+}
+
+async function ensurePolygon(provider) {
+  const polygonChainId = "0x89";
+  if (state.okx.chainId === polygonChainId) return;
+
+  try {
+    await provider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: polygonChainId }],
+    });
+  } catch (error) {
+    if (error?.code === 4902) {
+      await provider.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: polygonChainId,
+            chainName: "Polygon",
+            nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
+            rpcUrls: ["https://polygon-rpc.com"],
+            blockExplorerUrls: ["https://polygonscan.com"],
+          },
+        ],
+      });
+    } else {
+      throw error;
+    }
+  }
+  state.okx.chainId = await provider.request({ method: "eth_chainId" });
+}
+
+function renderOkxState() {
+  const connected = Boolean(state.okx.address);
+  setText("okxStatus", connected ? "已连接 Polygon" : "未连接");
+  setText("okxAddress", connected ? state.okx.address : "--");
+  document.getElementById("connectOkx").textContent = connected ? "重新连接" : "连接 OKX 钱包";
+}
+
+function eligibleCopySignals() {
+  const settings = state.copySettings;
+  return (state.data.signals || []).filter((signal) => {
+    return (
+      signal.side === "BUY" &&
+      Number(signal.wallet_score || 0) >= settings.minScore &&
+      Number(signal.price || 0) <= settings.maxPrice &&
+      Number(signal.suggested_cash || 0) > 0
+    );
+  });
+}
+
+function polymarketUrl(signal) {
+  return signal.slug ? `https://polymarket.com/event/${signal.slug}` : "https://polymarket.com";
+}
+
+function renderCopyQueue() {
+  const wrap = document.getElementById("copyQueue");
+  const queue = state.copySettings.enabled ? eligibleCopySignals() : [];
+  setText("queueCount", `${queue.length} 条`);
+
+  if (!state.copySettings.enabled) {
+    wrap.innerHTML = `<div class="empty">开启自动跟单队列后，系统会把符合条件的信号放到这里。</div>`;
+    return;
+  }
+
+  if (!queue.length) {
+    wrap.innerHTML = `<div class="empty">当前没有符合 OKX 跟单设置的信号。</div>`;
+    return;
+  }
+
+  wrap.innerHTML = queue
+    .map((signal, index) => {
+      const cappedCash = Math.min(Number(signal.suggested_cash || 0), state.copySettings.maxCash);
+      const executable = Boolean(signal.asset);
+      return `
+        <article class="queue-item">
+          <div>
+            <h4>${signal.title || "未命名市场"}</h4>
+            <p>${signal.outcome} @ ${Number(signal.price || 0).toFixed(3)} · 建议 ${fmtMoney.format(cappedCash)}</p>
+            <code>${executable ? `asset ${shortAddress(String(signal.asset))}` : "缺少 tokenId，暂不可自动提交"}</code>
+          </div>
+          <div class="queue-actions">
+            <a class="secondary-action link-action" href="${polymarketUrl(signal)}" target="_blank" rel="noreferrer">打开市场</a>
+            <button class="primary-action" type="button" data-copy-index="${index}" ${executable ? "" : "disabled"}>准备下单</button>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
+
+  for (const button of document.querySelectorAll("[data-copy-index]")) {
+    button.addEventListener("click", () => prepareOrder(queue[Number(button.dataset.copyIndex)]));
+  }
+}
+
+async function prepareOrder(signal) {
+  if (!state.okx.address) {
+    await connectOkxWallet();
+  }
+  const cappedCash = Math.min(Number(signal.suggested_cash || 0), state.copySettings.maxCash);
+  const message = [
+    "OKX 钱包已连接。",
+    "当前版本会生成受风控约束的跟单订单草稿。",
+    "",
+    `市场：${signal.title}`,
+    `方向：买入 ${signal.outcome}`,
+    `价格：${Number(signal.price || 0).toFixed(3)}`,
+    `金额：${fmtMoney.format(cappedCash)}`,
+    "",
+    "为避免把私钥或 CLOB API 密钥放进网页，真实提交订单需要接入 Polymarket CLOB 订单签名服务。现在将打开 Polymarket 市场页供你用 OKX 钱包确认交易。"
+  ].join("\\n");
+  alert(message);
+  window.open(polymarketUrl(signal), "_blank", "noopener,noreferrer");
 }
 
 function switchView(view) {
@@ -116,6 +284,7 @@ function switchView(view) {
   }
   document.getElementById("walletsView").classList.toggle("hidden", view !== "wallets");
   document.getElementById("signalsView").classList.toggle("hidden", view !== "signals");
+  document.getElementById("copyView").classList.toggle("hidden", view !== "copy");
   document.getElementById("rulesView").classList.toggle("hidden", view !== "rules");
 }
 
@@ -127,6 +296,7 @@ async function loadData() {
     renderSummary();
     renderWallets();
     renderSignals();
+    renderCopyQueue();
   } catch (error) {
     setText("runStatus", "暂无数据");
     document.getElementById("walletRows").innerHTML = `<tr><td colspan="9" class="empty">还没有生成数据，请先运行 GitHub Action 或本地分析脚本。</td></tr>`;
@@ -138,8 +308,14 @@ document.getElementById("walletSearch").addEventListener("input", (event) => {
   renderWallets();
 });
 
+document.getElementById("connectOkx").addEventListener("click", connectOkxWallet);
+document.getElementById("saveCopySettings").addEventListener("click", saveCopySettings);
+document.getElementById("autoCopyEnabled").addEventListener("change", saveCopySettings);
+
 for (const button of document.querySelectorAll(".tab")) {
   button.addEventListener("click", () => switchView(button.dataset.view));
 }
 
+loadCopySettings();
+renderOkxState();
 loadData();
