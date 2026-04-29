@@ -70,6 +70,7 @@ class Signal:
     wallet_score: float
     side: str
     market: str
+    asset: str
     outcome: str
     price: float
     size: float
@@ -343,6 +344,7 @@ def build_signals(config: dict[str, Any]) -> list[Signal]:
                 wallet_score=wallet.score,
                 side=trade.get("side", ""),
                 market=trade.get("conditionId", ""),
+                asset=str(trade.get("asset", "")),
                 outcome=trade.get("outcome", ""),
                 price=price,
                 size=size,
