@@ -132,6 +132,7 @@ input {
   border-radius: 6px;
   padding: 0 12px;
   font-size: 15px;
+  background: white;
 }
 
 .tabs {
@@ -285,6 +286,151 @@ th {
   line-height: 1.6;
 }
 
+.split-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.primary-action,
+.secondary-action {
+  min-height: 40px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.primary-action {
+  background: var(--accent);
+  color: white;
+}
+
+.primary-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.secondary-action {
+  background: #fbfcfa;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.link-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.copy-layout {
+  display: grid;
+  grid-template-columns: 310px 1fr;
+  min-height: 420px;
+}
+
+.copy-settings {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 18px;
+  border-right: 1px solid var(--line);
+  background: #fbfcfa;
+}
+
+.copy-settings label {
+  display: grid;
+  gap: 7px;
+}
+
+.wallet-state {
+  display: grid;
+  gap: 6px;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+}
+
+.wallet-state span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.wallet-state strong {
+  color: var(--accent);
+}
+
+.wallet-state code {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.switch-row {
+  grid-template-columns: 18px 1fr;
+  align-items: center;
+  padding: 10px 0;
+  color: var(--ink);
+}
+
+.switch-row input {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+}
+
+.copy-queue {
+  min-width: 0;
+}
+
+.queue-head {
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.queue-head span {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.queue-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.queue-item h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.queue-item p {
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.queue-item code {
+  color: var(--muted);
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.queue-actions {
+  display: flex;
+  gap: 8px;
+}
+
 .empty {
   padding: 28px;
   color: var(--muted);
@@ -309,6 +455,21 @@ th {
   .signal-grid,
   .rules-grid {
     grid-template-columns: 1fr;
+  }
+
+  .split-head,
+  .queue-item {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .copy-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .copy-settings {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
   }
 
   .tabs {
