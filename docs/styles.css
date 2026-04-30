@@ -80,6 +80,7 @@ main {
 }
 
 .summary-grid article,
+.sim-summary article,
 .panel,
 .toolbar {
   background: var(--surface);
@@ -95,13 +96,32 @@ main {
   align-content: space-between;
 }
 
-.summary-grid span {
+.summary-grid span,
+.sim-summary span {
   color: var(--muted);
   font-size: 14px;
 }
 
-.summary-grid strong {
+.summary-grid strong,
+.sim-summary strong {
   font-size: clamp(24px, 3vw, 36px);
+}
+
+.sim-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sim-summary article {
+  min-height: 96px;
+  padding: 16px;
+  border-radius: 8px;
+  display: grid;
+  align-content: space-between;
+  box-shadow: none;
 }
 
 .toolbar {
@@ -452,6 +472,7 @@ th {
   }
 
   .summary-grid,
+  .sim-summary,
   .signal-grid,
   .rules-grid {
     grid-template-columns: 1fr;
