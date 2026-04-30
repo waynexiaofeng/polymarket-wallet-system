@@ -47,6 +47,7 @@
           <button class="tab active" data-view="wallets" type="button">钱包排名</button>
           <button class="tab" data-view="watchlist" type="button">指定钱包</button>
           <button class="tab" data-view="signals" type="button">近期信号</button>
+          <button class="tab" data-view="simulation" type="button">模拟交易</button>
           <button class="tab" data-view="copy" type="button">OKX跟单</button>
           <button class="tab" data-view="rules" type="button">风控规则</button>
         </div>
@@ -104,6 +105,49 @@
           <p>默认只显示通过价格、金额、钱包评分和时间窗口过滤的买入信号。</p>
         </div>
         <div id="signalCards" class="signal-grid"></div>
+      </section>
+
+      <section id="simulationView" class="panel hidden">
+        <div class="section-head">
+          <h2>五天模拟交易</h2>
+          <p>纸面交易记录，每笔固定 500 USDC，不代表真实成交或收益。</p>
+        </div>
+        <div class="sim-summary">
+          <article>
+            <span>模拟笔数</span>
+            <strong id="simCount">0</strong>
+          </article>
+          <article>
+            <span>单笔金额</span>
+            <strong id="simAmount">$0</strong>
+          </article>
+          <article>
+            <span>总投入</span>
+            <strong id="simInvested">$0</strong>
+          </article>
+          <article>
+            <span>模拟盈亏</span>
+            <strong id="simPnl">$0</strong>
+          </article>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>日期</th>
+                <th>跟随钱包</th>
+                <th>市场</th>
+                <th>方向</th>
+                <th>入场价</th>
+                <th>当前模拟价</th>
+                <th>金额</th>
+                <th>模拟盈亏</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="simulationRows"></tbody>
+          </table>
+        </div>
       </section>
 
       <section id="copyView" class="panel hidden">
