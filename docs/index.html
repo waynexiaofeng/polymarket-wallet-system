@@ -48,7 +48,7 @@
           <button class="tab" data-view="watchlist" type="button">指定钱包</button>
           <button class="tab" data-view="signals" type="button">近期信号</button>
           <button class="tab" data-view="profit" type="button">近期盈利</button>
-          <button class="tab" data-view="simulation" type="button">模拟交易</button>
+          <button class="tab" data-view="simulation" type="button">PL交易</button>
           <button class="tab" data-view="copy" type="button">OKX跟单</button>
           <button class="tab" data-view="rules" type="button">风控规则</button>
         </div>
@@ -111,19 +111,19 @@
       <section id="profitView" class="panel hidden">
         <div class="section-head">
           <h2>近期盈利情况</h2>
-          <p>汇总近期模拟交易表现，并把入选钱包的 90 天已实现 PnL 作为参考背景。</p>
+          <p>汇总近期PL交易表现，并把入选钱包的 90 天已实现 PnL 作为参考背景。</p>
         </div>
         <div class="sim-summary">
           <article>
-            <span>模拟投入</span>
+            <span>PL投入</span>
             <strong id="profitInvested">$0</strong>
           </article>
           <article>
-            <span>模拟盈亏</span>
+            <span>PL盈亏</span>
             <strong id="profitPnl">$0</strong>
           </article>
           <article>
-            <span>模拟胜率</span>
+            <span>PL胜率</span>
             <strong id="profitWinRate">0%</strong>
           </article>
           <article>
@@ -135,7 +135,7 @@
           <div class="profit-notes">
             <article>
               <span>说明</span>
-              <p>模拟盈亏来自纸面交易，不代表真实成交。入选钱包 PnL 来自 Polymarket 钱包数据重算，用于判断跟单候选质量。</p>
+              <p>PL盈亏来自纸面交易，不代表真实成交。入选钱包 PnL 来自 Polymarket 钱包数据重算，用于判断跟单候选质量。</p>
             </article>
           </div>
           <div class="table-wrap">
@@ -158,12 +158,12 @@
 
       <section id="simulationView" class="panel hidden">
         <div class="section-head">
-          <h2>五天模拟交易</h2>
-          <p>纸面交易记录，每笔固定 500 USDC，不代表真实成交或收益。</p>
+          <h2>4月30日凌晨PL交易</h2>
+          <p>PL交易记录，每笔固定 500 USDC，时间统一为 30 号凌晨；不代表真实成交或收益。</p>
         </div>
         <div class="sim-summary">
           <article>
-            <span>模拟笔数</span>
+            <span>PL笔数</span>
             <strong id="simCount">0</strong>
           </article>
           <article>
@@ -175,7 +175,7 @@
             <strong id="simInvested">$0</strong>
           </article>
           <article>
-            <span>模拟盈亏</span>
+            <span>PL盈亏</span>
             <strong id="simPnl">$0</strong>
           </article>
         </div>
@@ -188,9 +188,9 @@
                 <th>市场</th>
                 <th>方向</th>
                 <th>入场价</th>
-                <th>当前模拟价</th>
+                <th>当前PL价</th>
                 <th>金额</th>
-                <th>模拟盈亏</th>
+                <th>PL盈亏</th>
                 <th>状态</th>
               </tr>
             </thead>
