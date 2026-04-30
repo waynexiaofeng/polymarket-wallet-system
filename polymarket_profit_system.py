@@ -15,7 +15,7 @@ import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 DATA_API = "https://data-api.polymarket.com"
@@ -41,6 +41,8 @@ DEFAULT_CONFIG = {
     "bankroll": 10000,
     "base_bet_fraction": 0.01,
     "require_consensus_wallets": 1,
+    "simulated_trade_days": 5,
+    "simulated_trade_amount": 500,
     "out_dir": "out",
 }
 
@@ -258,20 +260,64 @@ def write_rows(path: str, rows: list[dict[str, Any]]) -> None:
         writer.writerows(rows)
 
 
+def build_simulated_trades(
+    rankings: list[WalletScore],
+    signals: list[Signal] | None,
+    watchlist: list[dict[str, Any]],
+    config: dict[str, Any],
+) -> list[dict[str, Any]]:
+    days = int(config.get("simulated_trade_days", 5))
+    amount = float(config.get("simulated_trade_amount", 500))
+    signal_rows = signals or []
+    end_date = datetime.now(timezone.utc).date()
+    pnl_rates = [-0.036, 0.048, -0.018, 0.062, 0.024]
+    trades: list[dict[str, Any]] = []
+
+    for idx in range(days):
+        trade_date = end_date - timedelta(days=days - idx - 1)
+        signal = signal_rows[idx % len(signal_rows)] if signal_rows else None
+        wallet = rankings[idx % len(rankings)] if rankings else None
+        manual = watchlist[idx % len(watchlist)] if watchlist else {}
+        entry_price = 0.38 + (idx % 5) * 0.08
+        pnl = round(amount * pnl_rates[idx % len(pnl_rates)], 2)
+        current_price = max(0.01, min(0.99, entry_price + pnl / amount))
+
+        trades.append(
+            {
+                "date": trade_date.isoformat(),
+                "mode": "paper",
+                "wallet_name": signal.wallet_name if signal else (wallet.name if wallet else manual.get("userName", "模拟钱包")),
+                "wallet": signal.wallet if signal else (wallet.wallet if wallet else manual.get("proxyWallet", "")),
+                "title": signal.title if signal else f"模拟跟单市场 {idx + 1}",
+                "outcome": signal.outcome if signal else "YES",
+                "side": "BUY",
+                "entry_price": round(signal.price if signal else entry_price, 4),
+                "current_price": round(current_price, 4),
+                "amount": round(amount, 2),
+                "shares": round(amount / max(signal.price if signal else entry_price, 0.01), 2),
+                "pnl": pnl,
+                "status": "模拟持仓",
+            }
+        )
+    return trades
+
+
 def write_web_data(out_dir: str, rankings: list[WalletScore], signals: list[Signal] | None = None) -> None:
     config_path = "config.lite.json" if os.path.exists("config.lite.json") else None
+    config = load_config(config_path) if config_path else dict(DEFAULT_CONFIG)
     watchlist = []
-    if config_path:
-        try:
-            watchlist = load_config(config_path).get("manual_wallets", [])
-        except Exception:
-            watchlist = []
+    try:
+        watchlist = config.get("manual_wallets", [])
+    except Exception:
+        watchlist = []
+    simulated_trades = build_simulated_trades(rankings, signals, watchlist, config)
     data_dir = os.path.join("docs", "data")
     os.makedirs(data_dir, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_out_dir": out_dir,
         "manual_wallets": watchlist,
+        "simulated_trades": simulated_trades,
         "rankings": [asdict(row) for row in rankings],
         "signals": [asdict(row) for row in signals] if signals is not None else [],
     }
