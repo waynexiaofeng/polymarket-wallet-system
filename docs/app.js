@@ -1,5 +1,5 @@
 const state = {
-  data: { rankings: [], signals: [], generated_at: null },
+  data: { rankings: [], signals: [], manual_wallets: [], generated_at: null },
   view: "wallets",
   query: "",
   okx: {
@@ -88,6 +88,35 @@ function renderWallets() {
 
   if (!rows.length) {
     tbody.innerHTML = `<tr><td colspan="9" class="empty">没有符合当前搜索的钱包。</td></tr>`;
+  }
+}
+
+function renderManualWallets() {
+  const tbody = document.getElementById("manualRows");
+  const rankingsByWallet = new Map((state.data.rankings || []).map((row) => [String(row.wallet).toLowerCase(), row]));
+  const rows = state.data.manual_wallets || [];
+
+  tbody.innerHTML = rows
+    .map((row, index) => {
+      const wallet = String(row.proxyWallet || row.wallet || "").toLowerCase();
+      const analyzed = rankingsByWallet.get(wallet);
+      const status = analyzed
+        ? `已入选，评分 ${Number(analyzed.score || 0).toFixed(2)}`
+        : "已加入候选，等待通过过滤或下次重算";
+      return `
+        <tr>
+          <td>${index + 1}</td>
+          <td><strong>${row.userName || row.name || "--"}</strong></td>
+          <td><code>${wallet}</code></td>
+          <td class="positive">${fmtMoney.format(row.pnl || 0)}</td>
+          <td>${status}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="empty">还没有手动指定钱包。</td></tr>`;
   }
 }
 
@@ -283,6 +312,7 @@ function switchView(view) {
     item.classList.toggle("active", item.dataset.view === view);
   }
   document.getElementById("walletsView").classList.toggle("hidden", view !== "wallets");
+  document.getElementById("watchlistView").classList.toggle("hidden", view !== "watchlist");
   document.getElementById("signalsView").classList.toggle("hidden", view !== "signals");
   document.getElementById("copyView").classList.toggle("hidden", view !== "copy");
   document.getElementById("rulesView").classList.toggle("hidden", view !== "rules");
@@ -295,6 +325,7 @@ async function loadData() {
     state.data = await response.json();
     renderSummary();
     renderWallets();
+    renderManualWallets();
     renderSignals();
     renderCopyQueue();
   } catch (error) {
