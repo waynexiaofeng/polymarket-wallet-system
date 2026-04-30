@@ -1,5 +1,5 @@
 const state = {
-  data: { rankings: [], signals: [], manual_wallets: [], generated_at: null },
+  data: { rankings: [], signals: [], manual_wallets: [], simulated_trades: [], generated_at: null },
   view: "wallets",
   query: "",
   okx: {
@@ -147,6 +147,48 @@ function renderSignals() {
       `;
     })
     .join("");
+}
+
+function renderSimulation() {
+  const rows = state.data.simulated_trades || [];
+  const tbody = document.getElementById("simulationRows");
+  const invested = rows.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+  const pnl = rows.reduce((sum, row) => sum + Number(row.pnl || 0), 0);
+  const amount = rows[0]?.amount || 0;
+
+  setText("simCount", rows.length);
+  setText("simAmount", fmtMoney.format(amount));
+  setText("simInvested", fmtMoney.format(invested));
+  setText("simPnl", fmtMoney.format(pnl));
+  document.getElementById("simPnl").className = pnl >= 0 ? "positive" : "negative";
+
+  tbody.innerHTML = rows
+    .map((row) => {
+      const pnlClass = Number(row.pnl || 0) >= 0 ? "positive" : "negative";
+      return `
+        <tr>
+          <td>${row.date || "--"}</td>
+          <td>
+            <div class="wallet">
+              <strong>${row.wallet_name || "模拟钱包"}</strong>
+              <code>${shortAddress(row.wallet || "")}</code>
+            </div>
+          </td>
+          <td>${row.title || "--"}</td>
+          <td>${row.side || "BUY"} ${row.outcome || ""}</td>
+          <td>${Number(row.entry_price || 0).toFixed(3)}</td>
+          <td>${Number(row.current_price || 0).toFixed(3)}</td>
+          <td>${fmtMoney.format(row.amount || 0)}</td>
+          <td class="${pnlClass}">${fmtMoney.format(row.pnl || 0)}</td>
+          <td>${row.status || "模拟持仓"}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="9" class="empty">还没有模拟交易数据。</td></tr>`;
+  }
 }
 
 function loadCopySettings() {
@@ -314,6 +356,7 @@ function switchView(view) {
   document.getElementById("walletsView").classList.toggle("hidden", view !== "wallets");
   document.getElementById("watchlistView").classList.toggle("hidden", view !== "watchlist");
   document.getElementById("signalsView").classList.toggle("hidden", view !== "signals");
+  document.getElementById("simulationView").classList.toggle("hidden", view !== "simulation");
   document.getElementById("copyView").classList.toggle("hidden", view !== "copy");
   document.getElementById("rulesView").classList.toggle("hidden", view !== "rules");
 }
@@ -327,6 +370,7 @@ async function loadData() {
     renderWallets();
     renderManualWallets();
     renderSignals();
+    renderSimulation();
     renderCopyQueue();
   } catch (error) {
     setText("runStatus", "暂无数据");
