@@ -3,6 +3,18 @@
   "candidate_categories": ["OVERALL", "POLITICS", "SPORTS", "CRYPTO", "CULTURE", "WEATHER", "ECONOMICS", "TECH", "FINANCE"],
   "candidate_periods": ["MONTH", "ALL"],
   "candidate_limit_per_query": 50,
+  "manual_wallets": [
+    {"userName": "Theo4", "proxyWallet": "0x56687bf447db6ffa42ffe2204a05edaa20f55839", "pnl": 22053934},
+    {"userName": "Fredi9999", "proxyWallet": "0x1f2dd6d473f3e824cd2f8a89d9c69fb96f6ad0cf", "pnl": 16619507},
+    {"userName": "kch123", "proxyWallet": "0x6a72f61820b26b1fe4d956e17b6dc2a1ea3033ee", "pnl": 12010359},
+    {"userName": "Len9311238", "proxyWallet": "0x78b9ac44a6d7d7a076c14e0ad518b301b63c6b76", "pnl": 8709973},
+    {"userName": "zxgngl", "proxyWallet": "0xd235973291b2b75ff4070e9c0b01728c520b0f29", "pnl": 7807266},
+    {"userName": "RN1", "proxyWallet": "0x2005d16a84ceefa912d4e380cd32e7ff827875ea", "pnl": 7640673},
+    {"userName": "RepTrump", "proxyWallet": "0x863134d00841b2e200492805a01e1e2f5defaa53", "pnl": 7532410},
+    {"userName": "swisstony", "proxyWallet": "0x204f72f35326db932158cba6adff0b9a1da95e14", "pnl": 6692553},
+    {"userName": "PrincessCaro", "proxyWallet": "0x8119010a6e589062aa03583bb3f39ca632d9f887", "pnl": 6083643},
+    {"userName": "walletmobile", "proxyWallet": "0xe9ad918c7678cd38b12603a762e638a5d1ee7091", "pnl": 0}
+  ],
   "max_wallets_to_analyze": 120,
   "min_closed_positions": 15,
   "min_realized_pnl": 1000,
