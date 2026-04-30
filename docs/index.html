@@ -47,6 +47,7 @@
           <button class="tab active" data-view="wallets" type="button">钱包排名</button>
           <button class="tab" data-view="watchlist" type="button">指定钱包</button>
           <button class="tab" data-view="signals" type="button">近期信号</button>
+          <button class="tab" data-view="profit" type="button">近期盈利</button>
           <button class="tab" data-view="simulation" type="button">模拟交易</button>
           <button class="tab" data-view="copy" type="button">OKX跟单</button>
           <button class="tab" data-view="rules" type="button">风控规则</button>
@@ -105,6 +106,54 @@
           <p>默认只显示通过价格、金额、钱包评分和时间窗口过滤的买入信号。</p>
         </div>
         <div id="signalCards" class="signal-grid"></div>
+      </section>
+
+      <section id="profitView" class="panel hidden">
+        <div class="section-head">
+          <h2>近期盈利情况</h2>
+          <p>汇总近期模拟交易表现，并把入选钱包的 90 天已实现 PnL 作为参考背景。</p>
+        </div>
+        <div class="sim-summary">
+          <article>
+            <span>模拟投入</span>
+            <strong id="profitInvested">$0</strong>
+          </article>
+          <article>
+            <span>模拟盈亏</span>
+            <strong id="profitPnl">$0</strong>
+          </article>
+          <article>
+            <span>模拟胜率</span>
+            <strong id="profitWinRate">0%</strong>
+          </article>
+          <article>
+            <span>入选钱包90天PnL</span>
+            <strong id="profitWalletPnl">$0</strong>
+          </article>
+        </div>
+        <div class="profit-layout">
+          <div class="profit-notes">
+            <article>
+              <span>说明</span>
+              <p>模拟盈亏来自纸面交易，不代表真实成交。入选钱包 PnL 来自 Polymarket 钱包数据重算，用于判断跟单候选质量。</p>
+            </article>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>来源</th>
+                  <th>市场/钱包</th>
+                  <th>投入</th>
+                  <th>盈亏</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody id="profitRows"></tbody>
+            </table>
+          </div>
+        </div>
       </section>
 
       <section id="simulationView" class="panel hidden">
