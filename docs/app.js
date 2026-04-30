@@ -191,6 +191,63 @@ function renderSimulation() {
   }
 }
 
+function renderRecentProfit() {
+  const simulations = state.data.simulated_trades || [];
+  const rankings = state.data.rankings || [];
+  const invested = simulations.reduce((sum, row) => sum + Number(row.amount || 0), 0);
+  const pnl = simulations.reduce((sum, row) => sum + Number(row.pnl || 0), 0);
+  const wins = simulations.filter((row) => Number(row.pnl || 0) > 0).length;
+  const winRate = simulations.length ? wins / simulations.length : 0;
+  const walletPnl = rankings.reduce((sum, row) => sum + Number(row.realized_pnl || 0), 0);
+
+  setText("profitInvested", fmtMoney.format(invested));
+  setText("profitPnl", fmtMoney.format(pnl));
+  setText("profitWinRate", fmtPercent.format(winRate));
+  setText("profitWalletPnl", fmtMoney.format(walletPnl));
+  document.getElementById("profitPnl").className = pnl >= 0 ? "positive" : "negative";
+  document.getElementById("profitWalletPnl").className = walletPnl >= 0 ? "positive" : "negative";
+
+  const rows = [
+    ...simulations.map((row) => ({
+      date: row.date,
+      source: "模拟交易",
+      label: row.title || row.wallet_name || "模拟市场",
+      amount: Number(row.amount || 0),
+      pnl: Number(row.pnl || 0),
+      status: row.status || "模拟持仓",
+    })),
+    ...rankings.slice(0, 5).map((row) => ({
+      date: "90天",
+      source: "钱包重算",
+      label: row.name || shortAddress(row.wallet),
+      amount: Number(row.total_bought || 0),
+      pnl: Number(row.realized_pnl || 0),
+      status: `评分 ${Number(row.score || 0).toFixed(2)}`,
+    })),
+  ];
+
+  const tbody = document.getElementById("profitRows");
+  tbody.innerHTML = rows
+    .map((row) => {
+      const pnlClass = row.pnl >= 0 ? "positive" : "negative";
+      return `
+        <tr>
+          <td>${row.date || "--"}</td>
+          <td>${row.source}</td>
+          <td>${row.label}</td>
+          <td>${fmtMoney.format(row.amount)}</td>
+          <td class="${pnlClass}">${fmtMoney.format(row.pnl)}</td>
+          <td>${row.status}</td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="6" class="empty">暂无近期盈利数据。</td></tr>`;
+  }
+}
+
 function loadCopySettings() {
   try {
     const saved = JSON.parse(localStorage.getItem("copySettings") || "{}");
@@ -356,6 +413,7 @@ function switchView(view) {
   document.getElementById("walletsView").classList.toggle("hidden", view !== "wallets");
   document.getElementById("watchlistView").classList.toggle("hidden", view !== "watchlist");
   document.getElementById("signalsView").classList.toggle("hidden", view !== "signals");
+  document.getElementById("profitView").classList.toggle("hidden", view !== "profit");
   document.getElementById("simulationView").classList.toggle("hidden", view !== "simulation");
   document.getElementById("copyView").classList.toggle("hidden", view !== "copy");
   document.getElementById("rulesView").classList.toggle("hidden", view !== "rules");
@@ -370,6 +428,7 @@ async function loadData() {
     renderWallets();
     renderManualWallets();
     renderSignals();
+    renderRecentProfit();
     renderSimulation();
     renderCopyQueue();
   } catch (error) {
