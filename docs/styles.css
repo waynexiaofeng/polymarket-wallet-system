@@ -306,6 +306,34 @@ th {
   line-height: 1.6;
 }
 
+.profit-layout {
+  display: grid;
+}
+
+.profit-notes {
+  padding: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.profit-notes article {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fbfcfa;
+  padding: 16px;
+}
+
+.profit-notes span {
+  display: block;
+  color: var(--accent);
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.profit-notes p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
 .split-head {
   display: flex;
   align-items: center;
