@@ -170,7 +170,7 @@ function renderSimulation() {
           <td>${row.date || "--"}</td>
           <td>
             <div class="wallet">
-              <strong>${row.wallet_name || "模拟钱包"}</strong>
+              <strong>${row.wallet_name || "PL钱包"}</strong>
               <code>${shortAddress(row.wallet || "")}</code>
             </div>
           </td>
@@ -180,14 +180,14 @@ function renderSimulation() {
           <td>${Number(row.current_price || 0).toFixed(3)}</td>
           <td>${fmtMoney.format(row.amount || 0)}</td>
           <td class="${pnlClass}">${fmtMoney.format(row.pnl || 0)}</td>
-          <td>${row.status || "模拟持仓"}</td>
+          <td>${row.status || "PL持仓"}</td>
         </tr>
       `;
     })
     .join("");
 
   if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty">还没有模拟交易数据。</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="empty">还没有PL交易数据。</td></tr>`;
   }
 }
 
@@ -210,11 +210,11 @@ function renderRecentProfit() {
   const rows = [
     ...simulations.map((row) => ({
       date: row.date,
-      source: "模拟交易",
-      label: row.title || row.wallet_name || "模拟市场",
+      source: "PL交易",
+      label: row.title || row.wallet_name || "PL市场",
       amount: Number(row.amount || 0),
       pnl: Number(row.pnl || 0),
-      status: row.status || "模拟持仓",
+      status: row.status || "PL持仓",
     })),
     ...rankings.slice(0, 5).map((row) => ({
       date: "90天",
