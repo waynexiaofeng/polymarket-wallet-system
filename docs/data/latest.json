@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-29T09:14:54.737114+00:00",
+  "generated_at": "2026-04-30T01:32:44.286096+00:00",
   "source_out_dir": "out",
   "manual_wallets": [
     {
@@ -51,6 +51,83 @@
       "userName": "walletmobile",
       "proxyWallet": "0xe9ad918c7678cd38b12603a762e638a5d1ee7091",
       "pnl": 0
+    }
+  ],
+  "simulated_trades": [
+    {
+      "date": "2026-04-26",
+      "mode": "paper",
+      "wallet_name": "432614799197",
+      "wallet": "0xdc876e6873772d38716fda7f2452a78d426d7ab6",
+      "title": "模拟跟单市场 1",
+      "outcome": "YES",
+      "side": "BUY",
+      "entry_price": 0.38,
+      "current_price": 0.344,
+      "amount": 500.0,
+      "shares": 1315.79,
+      "pnl": -18.0,
+      "status": "模拟持仓"
+    },
+    {
+      "date": "2026-04-27",
+      "mode": "paper",
+      "wallet_name": "0x492442EaB586F242B53bDa933fD5dE859c8A3782-1766317541188",
+      "wallet": "0x492442eab586f242b53bda933fd5de859c8a3782",
+      "title": "模拟跟单市场 2",
+      "outcome": "YES",
+      "side": "BUY",
+      "entry_price": 0.46,
+      "current_price": 0.508,
+      "amount": 500.0,
+      "shares": 1086.96,
+      "pnl": 24.0,
+      "status": "模拟持仓"
+    },
+    {
+      "date": "2026-04-28",
+      "mode": "paper",
+      "wallet_name": "KeyTransporter",
+      "wallet": "0x94f199fb7789f1aef7fff6b758d6b375100f4c7a",
+      "title": "模拟跟单市场 3",
+      "outcome": "YES",
+      "side": "BUY",
+      "entry_price": 0.54,
+      "current_price": 0.522,
+      "amount": 500.0,
+      "shares": 925.93,
+      "pnl": -9.0,
+      "status": "模拟持仓"
+    },
+    {
+      "date": "2026-04-29",
+      "mode": "paper",
+      "wallet_name": "432614799197",
+      "wallet": "0xdc876e6873772d38716fda7f2452a78d426d7ab6",
+      "title": "模拟跟单市场 4",
+      "outcome": "YES",
+      "side": "BUY",
+      "entry_price": 0.62,
+      "current_price": 0.682,
+      "amount": 500.0,
+      "shares": 806.45,
+      "pnl": 31.0,
+      "status": "模拟持仓"
+    },
+    {
+      "date": "2026-04-30",
+      "mode": "paper",
+      "wallet_name": "0x492442EaB586F242B53bDa933fD5dE859c8A3782-1766317541188",
+      "wallet": "0x492442eab586f242b53bda933fd5de859c8a3782",
+      "title": "模拟跟单市场 5",
+      "outcome": "YES",
+      "side": "BUY",
+      "entry_price": 0.7,
+      "current_price": 0.724,
+      "amount": 500.0,
+      "shares": 714.29,
+      "pnl": 12.0,
+      "status": "模拟持仓"
     }
   ],
   "rankings": [
