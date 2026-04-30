@@ -25,6 +25,7 @@ DEFAULT_CONFIG = {
     "candidate_categories": ["OVERALL"],
     "candidate_periods": ["MONTH", "ALL"],
     "candidate_limit_per_query": 50,
+    "manual_wallets": [],
     "max_wallets_to_analyze": 100,
     "min_closed_positions": 15,
     "min_realized_pnl": 1000,
@@ -124,6 +125,18 @@ def as_int(value: Any, default: int = 0) -> int:
 
 def fetch_candidates(config: dict[str, Any]) -> list[dict[str, Any]]:
     by_wallet: dict[str, dict[str, Any]] = {}
+    for row in config.get("manual_wallets", []):
+        wallet = row.get("proxyWallet") or row.get("wallet")
+        if not wallet:
+            continue
+        normalized = {
+            "proxyWallet": wallet.lower(),
+            "userName": row.get("userName") or row.get("name") or wallet,
+            "pnl": as_float(row.get("pnl")),
+            "vol": as_float(row.get("vol")),
+        }
+        by_wallet[normalized["proxyWallet"]] = normalized
+
     for category in config["candidate_categories"]:
         for period in config["candidate_periods"]:
             rows = api_get(
@@ -139,9 +152,11 @@ def fetch_candidates(config: dict[str, Any]) -> list[dict[str, Any]]:
                 wallet = row.get("proxyWallet")
                 if not wallet:
                     continue
-                previous = by_wallet.get(wallet)
+                wallet_key = wallet.lower()
+                previous = by_wallet.get(wallet_key)
                 if previous is None or as_float(row.get("pnl")) > as_float(previous.get("pnl")):
-                    by_wallet[wallet] = row
+                    row["proxyWallet"] = wallet_key
+                    by_wallet[wallet_key] = row
     return sorted(by_wallet.values(), key=lambda r: as_float(r.get("pnl")), reverse=True)[: config["max_wallets_to_analyze"]]
 
 
@@ -244,11 +259,19 @@ def write_rows(path: str, rows: list[dict[str, Any]]) -> None:
 
 
 def write_web_data(out_dir: str, rankings: list[WalletScore], signals: list[Signal] | None = None) -> None:
+    config_path = "config.lite.json" if os.path.exists("config.lite.json") else None
+    watchlist = []
+    if config_path:
+        try:
+            watchlist = load_config(config_path).get("manual_wallets", [])
+        except Exception:
+            watchlist = []
     data_dir = os.path.join("docs", "data")
     os.makedirs(data_dir, exist_ok=True)
     payload = {
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "source_out_dir": out_dir,
+        "manual_wallets": watchlist,
         "rankings": [asdict(row) for row in rankings],
         "signals": [asdict(row) for row in signals] if signals is not None else [],
     }
