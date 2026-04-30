@@ -30,5 +30,7 @@
   "bankroll": 10000,
   "base_bet_fraction": 0.01,
   "require_consensus_wallets": 1,
+  "simulated_trade_days": 5,
+  "simulated_trade_amount": 500,
   "out_dir": "out"
 }
