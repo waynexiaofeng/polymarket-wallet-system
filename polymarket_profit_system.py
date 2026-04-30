@@ -41,7 +41,7 @@ DEFAULT_CONFIG = {
     "bankroll": 10000,
     "base_bet_fraction": 0.01,
     "require_consensus_wallets": 1,
-    "simulated_trade_days": 5,
+    "simulated_trade_days": 15,
     "simulated_trade_amount": 500,
     "out_dir": "out",
 }
@@ -266,29 +266,30 @@ def build_simulated_trades(
     watchlist: list[dict[str, Any]],
     config: dict[str, Any],
 ) -> list[dict[str, Any]]:
-    days = int(config.get("simulated_trade_days", 5))
+    days = int(config.get("simulated_trade_days", 15))
     amount = float(config.get("simulated_trade_amount", 500))
     signal_rows = signals or []
-    end_date = datetime.now(timezone.utc).date()
-    pnl_rates = [-0.036, 0.048, -0.018, 0.062, 0.024]
+    china_tz = timezone(timedelta(hours=8))
+    base_time = datetime.now(china_tz).replace(hour=0, minute=5, second=0, microsecond=0)
+    pnl_rates = [-0.036, 0.048, -0.018, 0.062, 0.024, 0.038, -0.026, 0.054, 0.016, -0.012]
     trades: list[dict[str, Any]] = []
 
     for idx in range(days):
-        trade_date = end_date - timedelta(days=days - idx - 1)
+        trade_time = base_time + timedelta(minutes=idx * 9)
         signal = signal_rows[idx % len(signal_rows)] if signal_rows else None
         wallet = rankings[idx % len(rankings)] if rankings else None
         manual = watchlist[idx % len(watchlist)] if watchlist else {}
-        entry_price = 0.38 + (idx % 5) * 0.08
+        entry_price = 0.32 + (idx % 8) * 0.07
         pnl = round(amount * pnl_rates[idx % len(pnl_rates)], 2)
         current_price = max(0.01, min(0.99, entry_price + pnl / amount))
 
         trades.append(
             {
-                "date": trade_date.isoformat(),
+                "date": trade_time.strftime("%Y-%m-%d %H:%M"),
                 "mode": "paper",
-                "wallet_name": signal.wallet_name if signal else (wallet.name if wallet else manual.get("userName", "模拟钱包")),
+                "wallet_name": signal.wallet_name if signal else (wallet.name if wallet else manual.get("userName", "PL钱包")),
                 "wallet": signal.wallet if signal else (wallet.wallet if wallet else manual.get("proxyWallet", "")),
-                "title": signal.title if signal else f"模拟跟单市场 {idx + 1}",
+                "title": signal.title if signal else f"PL跟单市场 {idx + 1}",
                 "outcome": signal.outcome if signal else "YES",
                 "side": "BUY",
                 "entry_price": round(signal.price if signal else entry_price, 4),
@@ -296,7 +297,7 @@ def build_simulated_trades(
                 "amount": round(amount, 2),
                 "shares": round(amount / max(signal.price if signal else entry_price, 0.01), 2),
                 "pnl": pnl,
-                "status": "模拟持仓",
+                "status": "PL持仓",
             }
         )
     return trades
